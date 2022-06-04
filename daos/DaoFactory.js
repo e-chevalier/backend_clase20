@@ -2,7 +2,7 @@ import logger from '../utils/winston/winston_config.js';
 class DaoFactory {
 
     async init(container_type) {
-        // container_type=[file, firestore, mongodb]
+        // container_type=[file, firestore, mongodb] for messages
 
         // DAO MEMORY DEFAULT
         const { default: ProductsDaoMemory } = await import('./products/ProductsDaoMemory.js')
@@ -18,6 +18,8 @@ class DaoFactory {
         // PRODUCTS DAO MEMORY
         const productsMemory = new ProductsDaoMemory(await productsContainer.getAll())
 
+        // MONOGODB ATLAS CONNECTION  ( for localstrategy and message if required.)
+        const { default: MongoDatabaseConnection } = await import('../utils/mongodbAtlas/MongoDatabaseConnection.js')
 
         // DAOs MESSAGE 
         //file, firestore, mongodb
@@ -44,8 +46,7 @@ class DaoFactory {
 
         if (container_type.toUpperCase() === 'mongodb'.toUpperCase()) {
             logger.info("MESSAGES - Initializing container for MongoDB Atlas")
-            // MONOGODB ATLAS CONNECTION
-            const { default: MongoDatabaseConnection } = await import('../utils/mongodbAtlas/MongoDatabaseConnection.js')
+            // MONOGODB ATLAS CONNECTION already established for localstrategy
             const { default: MessagesDaoMongoDB } = await import('./messages/MessagesDaoMongoDB.js')
             // MESSAGES DAO MONGODB
             const messagesContainer = new MessagesDaoMongoDB()

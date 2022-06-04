@@ -1,14 +1,13 @@
 import logger from '../utils/winston/winston_config.js';
-import MessagesDaoFile from './messages/MessagesDaoFile.js';
-import MessagesDaoFireStore from './messages/MessagesDaoStore.js';
-import MessagesDaoMemory from './messages/MessagesDaoMemory.js';
-import MessagesDaoMongoDB from './messages/MessagesDaoMongoDB.js';
-
-
 class DaoFactory {
 
+    async init() {
 
-    constructor(data){
+        const container_type = process.env.npm_config_container_type ? process.env.npm_config_container_type : 'mongodb'
+        logger.info("------------------ OPCIONES DE CONTENEDOR --------------------------------")
+        logger.info("npm run dev --container_type=[file, firestore, mongodb]")
+        logger.info("--------------------------------------------------------------------------")
+        logger.info("Container Type Selected : " + container_type)
 
         // DAO MEMORY DEFAULT
         const { default: ProductsDaoMemory } = await import('./products/ProductsDaoMemory.js')
@@ -20,46 +19,50 @@ class DaoFactory {
         const { default: ProductsDaoKnex } = await import('./products/ProductsDaoKnex.js')
         // PRODUCTS DAO KNEX MYSQL 
         const productsContainer = new ProductsDaoKnex(config_db.mysql)
-        await productsContainer.createTableProducts() 
+        await productsContainer.createTableProducts()
         // PRODUCTS DAO MEMORY
         const productsMemory = new ProductsDaoMemory(await productsContainer.getAll())
 
-        // // MONOGODB ATLAS CONNECTION
-        // const { connectMongodbAtlas } = await import('../utils/mongodbAtlas/MongoDatabase.js')
-        // // Connnect to dabase
-        // await connectMongodbAtlas()
 
+        // DAOs MESSAGE 
+        //file, firestore, mongodb
+        if (container_type.toUpperCase() === 'file'.toUpperCase()) {
 
-        if ( data.type_entity.toUpperCase() === 'message'.toUpperCase()) {
-            //file, firestore, mongodb
-
-            if ( data.type_connection.toUpperCase() === 'file'.toUpperCase() ) {
-
-                logger.info("MESSAGES - Initializing container for File")
-                const { default: MessagesDaoFile } = await import('./messages/MessagesDaoFile.js')
-
-                // MESSAGES DAO FILE
-                const messagesContainer = new MessagesDaoFile()
-
-                // PRODUCTS DAO MEMORY
-                const messagesMemory = new MessagesDaoMemory(await messagesContainer.getAll())
-
-                return { productsContainer, productsMemory, messagesContainer, messagesMemory }
-
-            }
+            logger.info("MESSAGES - Initializing container for File")
+            const { default: MessagesDaoFile } = await import('./messages/MessagesDaoFile.js')
+            // MESSAGES DAO FILE
+            const messagesContainer = new MessagesDaoFile()
+            // PRODUCTS DAO MEMORY
+            const messagesMemory = new MessagesDaoMemory(await messagesContainer.getAll())
+            return { productsContainer, productsMemory, messagesContainer, messagesMemory }
 
         }
 
-        if (data.type_entity.toUpperCase() === 'products'.toUpperCase()) {
-
+        if (container_type.toUpperCase() === 'firestore'.toUpperCase()) {
+            logger.info("MESSAGES - Initializing container for Firestore")
+            const { default: MessagesDaoFireStore } = await import('./messages/MessagesDaoFireStore.js')
+            // MESSAGES DAO FIRESTORE
+            const messagesContainer = new MessagesDaoFireStore()
+            const messagesMemory = new MessagesDaoMemory(await messagesContainer.getAll())
+            return { productsContainer, productsMemory, messagesContainer, messagesMemory }
         }
 
+        if (container_type.toUpperCase() === 'mongodb'.toUpperCase()) {
+            logger.info("MESSAGES - Initializing container for MongoDB Atlas")
+            // MONOGODB ATLAS CONNECTION
+            const { default: MongoDatabaseConnection } = await import('../utils/mongodbAtlas/MongoDatabaseConnection.js')
+            const { default: MessagesDaoMongoDB } = await import('./messages/MessagesDaoMongoDB.js')
+            // MESSAGES DAO MONGODB
+            const messagesContainer = new MessagesDaoMongoDB()
+            // PRODUCTS DAO MEMORY
+            const messagesMemory = new MessagesDaoMemory(await messagesContainer.getAll())
+
+            return { productsContainer, productsMemory, messagesContainer, messagesMemory }
+        }
 
     }
 
-
-
-
-
-
 }
+
+
+export default DaoFactory;

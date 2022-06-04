@@ -1,13 +1,20 @@
 import { Server as IOServer } from 'socket.io'
 import { normalize, schema } from "normalizr"
-import { productsMemory, productsContainer, messagesMemory, messagesContainer } from '../daos/index.js'
+//import { productsMemory, productsContainer, messagesMemory, messagesContainer } from '../daos/index.js'
+import DaoFactory from '../daos/DaoFactory.js'
 import logger from '../utils/winston/winston_config.js'
+
+
+const daoFactory = new DaoFactory()
+
+const { productsMemory, productsContainer, messagesMemory, messagesContainer } = await daoFactory.init()
 
 /**
  *  Regular expression for check email
  */
 
 const re = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+
 
 
 /**

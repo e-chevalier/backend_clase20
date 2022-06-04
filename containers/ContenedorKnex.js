@@ -4,6 +4,7 @@ import logger from '../utils/winston/winston_config.js'
 
 class ContenedorKnex {
 
+    // Singleton connection
     static db_knex
 
     constructor(knex_options, table_name) {

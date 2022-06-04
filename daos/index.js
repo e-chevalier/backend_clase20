@@ -24,9 +24,7 @@ async function dynamicImport(container_type) {
         const productsMemory = new ProductsDaoMemory(await productsContainer.getAll())
 
         // MONOGODB ATLAS CONNECTION
-        const { connectMongodbAtlas } = await import('../utils/mongodbAtlas/mongodbAtlas.js')
-        // Connnect to dabase
-        await connectMongodbAtlas()
+        const { default: MongoDatabaseConnection } = await import('../utils/mongodbAtlas/MongoDatabaseConnection.js')
 
 
         if (container_type.toUpperCase() === 'firestore'.toUpperCase()) {
@@ -43,9 +41,8 @@ async function dynamicImport(container_type) {
             logger.info("MESSAGES - Initializing container for MongoDB Atlas")
             const { default: MessagesDaoMongoDB } = await import('./messages/MessagesDaoMongoDB.js')
             // MONOGODB ATLAS CONNECTION
-            const { connectMongodbAtlas } = await import('../utils/mongodbAtlas/mongodbAtlas.js')
-            // Connnect to dabase
-            await connectMongodbAtlas()
+            const { default: MongoDatabaseConnection } = await import('../utils/mongodbAtlas/MongoDatabaseConnection.js')
+          
             // MESSAGES DAO MONGODB
             const messagesContainer = new MessagesDaoMongoDB()
             // PRODUCTS DAO MEMORY

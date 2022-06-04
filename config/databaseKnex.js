@@ -22,6 +22,7 @@ const config_db = {
 }
 
 class Database {
+    //Singleton Connection
     static clientMysql;
     static clientSqlite3;
 

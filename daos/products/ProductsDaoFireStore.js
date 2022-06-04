@@ -1,12 +1,11 @@
 import { ContenedorFireStore } from "../../containers/ContenedorFireStore.js"
-import { db_firestore } from '../../utils/firestore/firestore.js'
+import FirestoreDatabaseConnection from "../../utils/firestore/FirestoreDatabaseConnection.js"
 
 class ProductsDaoFireStore extends ContenedorFireStore {
 
     constructor(){
-        super(db_firestore, 'products')
+        super(FirestoreDatabaseConnection.clientFirestore, 'products')
     }
-
 
 }
 

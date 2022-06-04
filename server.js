@@ -82,14 +82,22 @@ serverRoutes(app, passport)
 
 const numCPUs = os.cpus().length
 
+
+logger.info("------------------ OPCIONES DE CONTENEDOR --------------------------------")
+logger.info("npm run dev -- --container_type [file, firestore, mongodb]")
+logger.info("--------------------------------------------------------------------------")
+
+
 const argv = yargs(hideBin(process.argv))
     .default({
         modo: 'FORK',
-        puerto: process.env.PORT || 8080
+        puerto: process.env.PORT || 8080,
+        container_type: 'mongodb'
     })
     .alias({
         m: 'modo',
-        p: 'puerto'
+        p: 'puerto',
+        ct: 'container_type'
     })
     .argv
 
@@ -123,7 +131,7 @@ if (argv.modo.toUpperCase() == 'CLUSTER') {
 
     } else {
 
-        let io = serverSocketsEvents(httpServer)
+        let io = await serverSocketsEvents(httpServer, argv.container_type )
 
         const server = httpServer.listen(PORT, (err) => {
             if (err) {
@@ -151,7 +159,7 @@ if (argv.modo.toUpperCase() == 'CLUSTER') {
     
 } else {
 
-    serverSocketsEvents(httpServer)
+    await serverSocketsEvents(httpServer, argv.container_type)
 
     const server = httpServer.listen(PORT, (err) => {
         if (err) {

@@ -1,13 +1,8 @@
 import logger from '../utils/winston/winston_config.js';
 class DaoFactory {
 
-    async init() {
-
-        const container_type = process.env.npm_config_container_type ? process.env.npm_config_container_type : 'mongodb'
-        logger.info("------------------ OPCIONES DE CONTENEDOR --------------------------------")
-        logger.info("npm run dev --container_type=[file, firestore, mongodb]")
-        logger.info("--------------------------------------------------------------------------")
-        logger.info("Container Type Selected : " + container_type)
+    async init(container_type) {
+        // container_type=[file, firestore, mongodb]
 
         // DAO MEMORY DEFAULT
         const { default: ProductsDaoMemory } = await import('./products/ProductsDaoMemory.js')

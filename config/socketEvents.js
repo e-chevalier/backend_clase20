@@ -4,11 +4,6 @@ import { normalize, schema } from "normalizr"
 import DaoFactory from '../daos/DaoFactory.js'
 import logger from '../utils/winston/winston_config.js'
 
-
-const daoFactory = new DaoFactory()
-
-const { productsMemory, productsContainer, messagesMemory, messagesContainer } = await daoFactory.init()
-
 /**
  *  Regular expression for check email
  */
@@ -33,9 +28,11 @@ const messagesSchema = new schema.Entity('messages', {
 })
 
 
-export const serverSocketsEvents = (httpsServer) => {
+export const serverSocketsEvents = async (httpsServer, container_type) => {
 
     const io = new IOServer(httpsServer)
+    const daoFactory = new DaoFactory()
+    const { productsMemory, productsContainer, messagesMemory, messagesContainer } = await daoFactory.init(container_type)
 
 
     io.on('connection', (socket) => {

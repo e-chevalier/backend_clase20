@@ -3,6 +3,7 @@ import { normalize, schema } from "normalizr"
 //import { productsMemory, productsContainer, messagesMemory, messagesContainer } from '../daos/index.js'
 import DaoFactory from '../daos/DaoFactory.js'
 import logger from '../utils/winston/winston_config.js'
+import MessagesRepo from '../repository/MessagesRepo.js'
 
 /**
  *  Regular expression for check email
@@ -33,6 +34,7 @@ export const serverSocketsEvents = async (httpsServer, container_type) => {
     const io = new IOServer(httpsServer)
     const daoFactory = new DaoFactory()
     const { productsMemory, productsContainer, messagesMemory, messagesContainer } = await daoFactory.init(container_type)
+    //const messageRepo = new MessagesRepo(messagesMemory, messagesContainer)
 
 
     io.on('connection', (socket) => {
@@ -44,6 +46,13 @@ export const serverSocketsEvents = async (httpsServer, container_type) => {
 
             //let messagesOriginal = await messagesMemory.getAll()
             let messagesOriginal = await messagesContainer.getAll()
+            // let messagesOriginal2 = await messageRepo.getAll()
+            
+            // messagesOriginal2.forEach(e => {
+            //     console.log(e.author.name)
+            // });
+
+            // messagesOriginal2
             let messagesNormalized = normalize({ id: 'messages', messages: messagesOriginal }, messagesSchema)
 
             io.sockets.emit('messages', messagesNormalized)

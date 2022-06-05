@@ -15,6 +15,16 @@ class Message {
         this.#id = id
     }
 
+    get data(){
+        
+        return {
+            author: this.#author.data,
+            text: this.#text,
+            date: this.#date,
+            id: this.#id
+        }
+    }
+
     get author(){
         return this.#author
     }

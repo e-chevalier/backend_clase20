@@ -9,10 +9,13 @@ class MessagesRepo{
 
     async getAll(){
         let messagesOriginal = await this.messagesContainer.getAll()
-        console.log(messagesOriginal)
         return messagesOriginal.map(msj => new Message(msj))
     }
 
+    async save(message) {
+        await this.messagesMemory.save(message)
+        await this.messagesContainer.save(message)
+    }
 
 }
 

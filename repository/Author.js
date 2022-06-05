@@ -16,6 +16,17 @@ class Author {
         this.#avatar = avatar
     }
 
+    get data(){
+        return {
+            id: this.#id,
+            name: this.#name,
+            surname: this.#surname,
+            age: this.#age,
+            alias: this.#alias,
+            avatar: this.#avatar
+        }
+    }
+
     get id(){
         return this.#id
     }
